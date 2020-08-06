@@ -154,6 +154,8 @@ class AppController {
       this.el.panelCamera.css({
         height: 'calc(100% - 120px)',
       });
+
+      this._camera = new CameraController(this.el.videoCamera);
     });
 
     this.el.btnClosePanelCamera.on('click', (e) => {
@@ -263,6 +265,8 @@ class AppController {
         range.insertNode(frag);
 
         range.setStartAfter(img);
+
+        this.el.inputText.focus();
 
         this.el.inputText.dispatchEvent(new Event('keyup'));
       });
