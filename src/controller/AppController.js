@@ -1,4 +1,7 @@
-class AppController {
+import { Format } from './../util/Format';
+import { CameraController } from './CameraController';
+
+export class AppController {
   constructor() {
     this.elementsPrototype();
     this.loadElements();
