@@ -206,6 +206,10 @@ export class AppController {
 
     this.el.inputDocument.on('change', (e) => {
       if (this.el.inputDocument.files.length) {
+        this.el.panelDocumentPreview.css({
+          height: '1%',
+        });
+
         let file = this.el.inputDocument.files[0];
 
         this._documentPreviewController = new DocumentPreviewController(file);
@@ -217,9 +221,16 @@ export class AppController {
             this.el.infoPanelDocumentPreview.innerHTML = data.info;
             this.el.imagePanelDocumentPreview.show();
             this.el.filePanelDocumentPreview.hide();
+
+            this.el.panelDocumentPreview.css({
+              height: 'calc(100% - 120px)',
+            });
           })
           .catch((err) => {
-          
+            this.el.panelDocumentPreview.css({
+              height: 'calc(100% - 120px)',
+            });
+
             switch (file.type) {
               case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
               case 'application/msword':
