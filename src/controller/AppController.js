@@ -1,6 +1,6 @@
 import { Format } from './../util/Format';
 import { CameraController } from './CameraController';
-
+import { MicrophoneController } from './MicrophoneController';
 import { DocumentPreviewController } from './DocumentPreviewController';
 
 export class AppController {
@@ -279,14 +279,25 @@ export class AppController {
     this.el.btnSendMicrophone.on('click', (e) => {
       this.el.recordMicrophone.show();
       this.el.btnSendMicrophone.hide();
-      this.startRecordMicrophoneTime();
+
+      this._MicrophoneController = new MicrophoneController();
+
+      this._MicrophoneController.on('ready', (audio) => {
+        this._MicrophoneController.startRecording();
+      });
+
+      this._MicrophoneController.on('recordtimer', (timer) => {
+        this.el.recordMicrophoneTimer.innerHTML = Format.toTime(timer);
+      });
     });
 
     this.el.btnCancelMicrophone.on('click', (e) => {
+      this._MicrophoneController.stopRecording();
       this.closeRecordMicrophone();
     });
 
     this.el.btnFinishMicrophone.on('click', (e) => {
+      this._MicrophoneController.stopRecording();
       this.closeRecordMicrophone();
     });
 
@@ -357,18 +368,9 @@ export class AppController {
     });
   }
 
-  startRecordMicrophoneTime() {
-    let start = Date.now();
-
-    this._recordMicrophoneInterval = setInterval(() => {
-      this.el.recordMicrophoneTimer.innerHTML = Format.toTime(Date.now() - start);
-    }, 100);
-  }
-
   closeRecordMicrophone() {
     this.el.recordMicrophone.hide();
     this.el.btnSendMicrophone.show();
-    clearInterval(this._recordMicrophoneInterval);
   }
 
   closeAllMainPanel() {
