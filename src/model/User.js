@@ -52,7 +52,34 @@ export class User extends Model {
     return Firebase.db().collection('/users');
   }
 
+  static getContactRef(id) {
+    return User.getRef().doc(id).collection('contacts');
+  }
+
   static FindbyEmail(email) {
     return User.getRef().doc(email);
+  }
+
+  addContact(contact) {
+    return User.getContactRef(this.email).doc(btoa(contact.email)).set(contact.toJSON());
+  }
+
+  getContacts() {
+    return new Promise((resolve, reject) => {
+      User.getContactRef(this.email).onSnapshot((docs) => {
+        let contacts = [];
+
+        docs.forEach((doc) => {
+          let data = doc.data();
+          data.id = doc.id;
+
+          contacts.push(data);
+        });
+
+        this.trigger('contactschange', docs);
+
+        resolve(contacts);
+      });
+    });
   }
 }
