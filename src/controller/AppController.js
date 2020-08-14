@@ -4,6 +4,7 @@ import { MicrophoneController } from './MicrophoneController';
 import { DocumentPreviewController } from './DocumentPreviewController';
 import { Firebase } from './../util/Firebase';
 import { User } from '../model/User';
+import { Chat } from './../model/Chat';
 
 export class AppController {
   constructor() {
@@ -263,13 +264,19 @@ export class AppController {
 
       let contact = new User(formData.get('email'));
 
-      console.log(contact);
-
       contact.on('datachange', (data) => {
         if (data.name) {
-          this._user.addContact(contact).then(() => {
-            console.info('contato foi adicionado');
-            this.el.btnClosePanelAddContact.click();
+          Chat.createIfNotExist(this._user.email, contact.email).then((chat) => {
+            contact.chatId = chat.id;
+
+            this._user.chatId = chat.id;
+
+            contact.addContact(this._user);
+
+            this._user.addContact(contact).then(() => {
+              console.info('contato foi adicionado');
+              this.el.btnClosePanelAddContact.click();
+            });
           });
         } else {
           console.error('Usuário não foi encontrato!');
@@ -297,9 +304,7 @@ export class AppController {
     });
 
     this.el.inputPhoto.on('change', (e) => {
-      [...this.el.inputPhoto.files].forEach((file) => {
-        console.log(file);
-      });
+      [...this.el.inputPhoto.files].forEach((file) => {});
     });
 
     this.el.btnAttachCamera.on('click', (e) => {
@@ -339,9 +344,7 @@ export class AppController {
       this.el.containerSendPicture.hide();
     });
 
-    this.el.btnSendPicture.on('click', (e) => {
-      console.log(this.el.pictureCamera.src);
-    });
+    this.el.btnSendPicture.on('click', (e) => {});
 
     this.el.btnAttachDocument.on('click', (e) => {
       this.closeAllMainPanel();
@@ -413,9 +416,7 @@ export class AppController {
       this.el.panelMessagesContainer.show();
     });
 
-    this.el.btnSendDocument.on('click', (e) => {
-      console.log('oi');
-    });
+    this.el.btnSendDocument.on('click', (e) => {});
 
     this.el.btnAttachContact.on('click', (e) => {
       this.el.modalContacts.show();
@@ -469,9 +470,7 @@ export class AppController {
       }
     });
 
-    this.el.btnSend.on('click', (e) => {
-      console.log(this.el.inputText.innerHTML);
-    });
+    this.el.btnSend.on('click', (e) => {});
 
     this.el.btnEmojis.on('click', (e) => {
       this.el.panelEmojis.toggleClass('open');
