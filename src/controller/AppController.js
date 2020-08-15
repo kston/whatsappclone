@@ -132,9 +132,7 @@ export class AppController {
 
   setActiveChat(contact) {
     if (this._contactActive) {
-      Message.getRef(this._contactActive.chatId)
-        .orderBy('timeStamp')
-        .onSnapshot(() => {});
+      Message.getRef(this._contactActive.chatId).onSnapshot(() => {});
     }
     this._contactActive = contact;
 
@@ -151,8 +149,6 @@ export class AppController {
       display: 'flex',
     });
 
-    this.el.panelMessagesContainer.innerHTML = '';
-
     Message.getRef(this._contactActive.chatId)
       .orderBy('timeStamp')
       .onSnapshot((docs) => {
@@ -162,18 +158,29 @@ export class AppController {
 
         let autoScroll = scrollTop >= scrolltopMax - 1;
 
+        this.el.panelMessagesContainer.innerHTML = '';
+
         docs.forEach((doc) => {
           let data = doc.data();
           data.id = doc.id;
 
-          if (!this.el.panelMessagesContainer.querySelector('#_' + data.id)) {
-            let message = new Message();
+          let message = new Message();
 
-            message.fromJSON(data);
-            let me = data.from === this._user.email;
+          message.fromJSON(data);
+          let me = data.from === this._user.email;
+
+          if (!this.el.panelMessagesContainer.querySelector('#_' + data.id)) {
+            if (!me) {
+              doc.ref.set({ status: 'read' }, { merge: true });
+            }
             let view = message.getViewElement(me);
 
             this.el.panelMessagesContainer.appendChild(view);
+          } else if (me) {
+            let msgEl = this.el.panelMessagesContainer.querySelector('#_' + data.id);
+            msgEl.querySelector(
+              '.message-status'
+            ).innerHTML = message.getStatusViewElement().outerHTML;
           }
         });
 
