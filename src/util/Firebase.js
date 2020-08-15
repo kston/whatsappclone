@@ -29,7 +29,7 @@ export class Firebase {
   }
 
   static hd() {
-    return firebase.storage;
+    return firebase.storage();
   }
 
   initAuth() {
