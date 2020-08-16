@@ -6,6 +6,7 @@ import { Firebase } from './../util/Firebase';
 import { User } from '../model/User';
 import { Chat } from './../model/Chat';
 import { Message } from './../model/Message';
+import { Base64 } from '../util/base64';
 
 export class AppController {
   constructor() {
@@ -176,7 +177,12 @@ export class AppController {
             let view = message.getViewElement(me);
 
             this.el.panelMessagesContainer.appendChild(view);
-          } else if (me) {
+          } else {
+            let view = message.getViewElement(me);
+
+            this.el.panelMessagesContainer.querySelector('#_' + data.id).innerHTML = view.innerHTML;
+          }
+          if (this.el.panelMessagesContainer.querySelector('#_' + data.id) && me) {
             let msgEl = this.el.panelMessagesContainer.querySelector('#_' + data.id);
             msgEl.querySelector(
               '.message-status'
@@ -410,10 +416,9 @@ export class AppController {
     });
 
     this.el.btnSendPicture.on('click', (e) => {
-      let regex = /^data:(.+);base64,(.*)$/;
-
       this.el.btnSendPicture.disabled = true;
 
+      let regex = /^data:(.+);base64,(.*)$/;
       let result = this.el.pictureCamera.src.match(regex);
       let mimeType = result[1];
       let ext = mimeType.split('/')[1];
@@ -528,7 +533,26 @@ export class AppController {
       this.el.panelMessagesContainer.show();
     });
 
-    this.el.btnSendDocument.on('click', (e) => {});
+    this.el.btnSendDocument.on('click', (e) => {
+      let file = this.el.inputDocument.files[0];
+      let base64 = this.el.imgPanelDocumentPreview.src;
+
+      if (file.type === 'application/pdf') {
+        Base64.toFile(base64).then((filePreview) => {
+          Message.sendDocument(
+            this._contactActive.chatId,
+            this._user.email,
+            file,
+            filePreview,
+            this.el.infoPanelDocumentPreview.innerHTML
+          );
+        });
+      } else {
+        Message.sendDocument(this._contactActive.chatId, this._user.email, file);
+      }
+
+      this.el.btnClosePanelDocumentPreview.click();
+    });
 
     this.el.btnAttachContact.on('click', (e) => {
       this.el.modalContacts.show();
