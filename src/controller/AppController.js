@@ -66,6 +66,8 @@ export class AppController {
         let contact = doc.data();
         let div = document.createElement('div');
 
+        console.log(contact);
+
         div.className = 'contact-item';
 
         div.innerHTML = `<div class="dIyEr">
@@ -89,7 +91,7 @@ export class AppController {
                     <span dir="auto" title="${contact.name}" class="_1wjpf">${contact.name}</span>
                 </div>
                 <div class="_3Bxar">
-                    <span class="_3T2VG">${contact.lastMassageTime}</span>
+                    <span class="_3T2VG">${Format.timeStampToTime(contact.lastMassageTime)}</span>
                 </div>
             </div>
             <div class="_1AwDx">
@@ -104,7 +106,7 @@ export class AppController {
                                 </svg>
                             </span>
                         </div>
-                        <span dir="ltr" class="_1wjpf _3NFp9">${contact.lastMassage}</span>
+                        <span dir="ltr" class="_1wjpf _3NFp9">${contact.lastMessage}</span>
                         <div class="_3Bxar">
                             <span>
                                 <div class="_15G96">
